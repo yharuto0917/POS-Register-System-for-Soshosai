@@ -1,6 +1,8 @@
 from firebase_functions import https_fn
 from firebase_admin import initialize_app
 from src.services.service_gemini import geminiAnalyze
+from src.services.service_error import sendErrorLog
+from src.services.service_gas import excuteGAS
 
 initialize_app()
 
@@ -27,7 +29,7 @@ def on_call_backend(req: https_fn.CallableRequest) -> any:
     contents = req.data.get("contents")
     
     if(function_name == "sendErrorLog"):
-        result = sedErroLog(contents)
+        result = sendErrorLog(contents)
         return https_fn.Response(result)
     elif(function_name == "geminiAnalyze"):
         return geminiAnalyze(contents)
