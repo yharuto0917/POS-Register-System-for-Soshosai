@@ -10,7 +10,7 @@ NotebookLM:
 このアプリケーションは以下の言語及びフレームワークで記述されています。
 * TypeScript
 * React
-* Vite
+* Next.js
 * ShadcnUI
 * TailwindCSS
 
