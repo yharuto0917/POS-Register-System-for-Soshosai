@@ -32,32 +32,14 @@ def on_call_backend(req: https_fn.CallableRequest) -> any:
         )
     
     if(function_name == "sendErrorLog"):
-        try:
-            result = sendErrorLog(contents)
-            return result
-        except Exception as e:
-            raise https_fn.HttpsError(
-                code = https_fn.HttpsErrorCode.INTERNAL,
-                message = f"sendErrorLogの実行中にエラーが発生しました: {e}"
-            )
+        result = sendErrorLog(contents)
+        return result
     elif(function_name == "geminiAnalyze"):
-        try:
-            result = geminiAnalyze(contents)
-            return result
-        except Exception as e:
-            raise https_fn.HttpsError(
-                code = https_fn.HttpsErrorCode.INTERNAL,
-                message = f"geminiAnalyzeの実行中にエラーが発生しました: {e}"
-            )
+        result = geminiAnalyze(contents)
+        return result
     elif(function_name == "excuteGAS"):
-        try:
-            result = excuteGAS(contents, function_name)
-            return result
-        except Exception as e:
-            raise https_fn.HttpsError(
-                code = https_fn.HttpsErrorCode.INTERNAL,
-                message = f"excuteGASの実行中にエラーが発生しました: {e}"
-            )
+        result = excuteGAS(contents, function_name)
+        return result
     else:
         raise https_fn.HttpsError(
             code = https_fn.HttpsErrorCode.INVALID_ARGUMENT,

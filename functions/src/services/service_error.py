@@ -14,6 +14,7 @@ BROADCAST_URL = "https://api.line.me/v2/bot/message/broadcast"
 # import requests
 
 def sendErrorLog(contents):
+    # ラインアクセストークンを取得
     # line_access_token = getLineAccessToken()
 
     # headers = {
@@ -32,6 +33,7 @@ def sendErrorLog(contents):
     #     ]
     # }
 
+    # ラインメッセージを送信
     # try:
     #     response = requests.post(
     #         BROADCAST_URL,
