@@ -8,7 +8,7 @@ NotebookLM:
 ## システム概要
 ### システム構成
 このアプリケーションは以下の言語及びフレームワークで記述されています。
-* TypeScript
+* JavaScript
 * React
 * Next.js
 * ShadcnUI
