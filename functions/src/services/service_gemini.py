@@ -11,12 +11,11 @@
 }
 """
 
-import os
+import json
 from google import genai
 from src.api.api_gemini import getGeminiApiKey
 from pydantic import BaseModel, Field
-from typing import List, Literal, Optional
-from datetime import datetime, date
+from typing import List
 from enum import Enum
 
 # Enumの定義
@@ -38,12 +37,12 @@ class Priority(str, Enum):
 # サブモデルの定義
 class Period(BaseModel):
     """分析期間"""
-    start: date = Field(..., description="分析開始日")
-    end: date = Field(..., description="分析終了日")
+    start: str = Field(..., description="分析開始日（YYYY-MM-DD形式）")
+    end: str = Field(..., description="分析終了日（YYYY-MM-DD形式）")
 
 class Metadata(BaseModel):
     """メタ情報"""
-    analysisDate: date = Field(..., description="分析実行日")
+    analysisDate: str = Field(..., description="分析実行日（YYYY-MM-DD形式）")
     storeId: str = Field(..., description="店舗ID")
     period: Period = Field(..., description="分析対象期間")
 
@@ -114,84 +113,135 @@ class AnalyzeResult(BaseModel):
         description="1行サマリー（100文字以内）"
     )
 
-    class Config:
-        # JSONスキーマ生成時の設定
-        schema_extra = {
-            "example": {
-                "metadata": {
-                    "analysisDate": "2025-10-12",
-                    "storeId": "store001",
-                    "period": {
-                        "start": "2025-10-11",
-                        "end": "2025-10-12"
-                    }
-                },
-                "metrics": {
-                    "totalRevenue": 50000,
-                    "totalOrders": 120,
-                    "averageOrderValue": 417,
-                    "peakHour": "12:00-13:00",
-                    "growthRate": 15.5
-                },
-                "topProducts": [
-                    {
-                        "name": "焼きそば",
-                        "revenue": 15000,
-                        "quantity": 50,
-                        "trend": "up"
-                    }
-                ],
-                "hourlyTrend": [
-                    {
-                        "hour": "11:00-12:00",
-                        "revenue": 8000,
-                        "orders": 20
-                    }
-                ],
-                "insights": [
-                    {
-                        "type": "recommendation",
-                        "priority": "high",
-                        "message": "昼食時間帯の焼きそばが品薄。追加調理を推奨",
-                        "action": "焼きそばを20食追加準備"
-                    }
-                ],
-                "forecast": {
-                    "expectedRevenue": 55000,
-                    "confidence": 75,
-                    "recommendations": [
-                        "焼きそば60食準備",
-                        "11時台のスタッフを1名増員"
-                    ]
-                },
-                "summary": "本日は昨日比15%増の好調。焼きそばの在庫に注意が必要。"
-            }
+class Config:
+    # JSONスキーマ生成時の設定
+    schema_extra = {
+        "example": {
+            "metadata": {
+                "analysisDate": "2025-10-12",
+                "storeId": "store001",
+                "period": {
+                    "start": "2025-10-11",
+                    "end": "2025-10-12"
+                }
+            },
+            "metrics": {
+                "totalRevenue": 50000,
+                "totalOrders": 120,
+                "averageOrderValue": 417,
+                "peakHour": "12:00-13:00",
+                "growthRate": 15.5
+            },
+            "topProducts": [
+                {
+                    "name": "焼きそば",
+                    "revenue": 15000,
+                    "quantity": 50,
+                    "trend": "up"
+                }
+            ],
+            "hourlyTrend": [
+                {
+                    "hour": "11:00-12:00",
+                    "revenue": 8000,
+                    "orders": 20
+                }
+            ],
+            "insights": [
+                {
+                    "type": "recommendation",
+                    "priority": "high",
+                    "message": "昼食時間帯の焼きそばが品薄。追加調理を推奨",
+                    "action": "焼きそばを20食追加準備"
+                }
+            ],
+            "forecast": {
+                "expectedRevenue": 55000,
+                "confidence": 75,
+                "recommendations": [
+                    "焼きそば60食準備",
+                    "11時台のスタッフを1名増員"
+                ]
+            },
+            "summary": "本日は昨日比15%増の好調。焼きそばの在庫に注意が必要。"
         }
+    }
 
 def geminiAnalyze(contents):
-    client = genai.Client(api_key=getGeminiApiKey())
-    model_name = contents.get("model_name")
-    request_prompt = contents.get("prompt")
-    request_materials = contents.get("materials")
+    try:
+        # 入力データの検証
+        if not isinstance(contents, dict):
+            raise ValueError("contentsはdict形式である必要があります")
+        
+        # パラメータの取得
+        model_name = contents.get("model_name")
+        request_prompt = contents.get("prompt")
+        request_materials = contents.get("materials")
+        
+        # 必須パラメータの検証
+        if not model_name:
+            raise ValueError("model_nameが指定されていません")
+        if not request_prompt:
+            raise ValueError("promptが指定されていません")
+        if request_materials is None:
+            raise ValueError("materialsが指定されていません")
 
-    prompt = [
-        {
-            "role": "user",
-            "parts": [
-                f"role: you are a helpful assistant.You should answer the user's prompt based on the materials.\n\n"
-                f"user_prompt: {request_prompt}\n\n"
-                f"materials: {request_materials}"
-            ],
-        }
-    ]
+        # Gemini APIキーの取得
+        try:
+            api_key = getGeminiApiKey()
+            if api_key is None or api_key.strip() == "":
+                raise ValueError("Gemini APIキーが設定されていません")
+        except Exception as e:
+            raise RuntimeError(f"APIキーの取得に失敗しました: {e}")
 
-    response = client.models.generate_content(
-        model=model_name,
-        contents=prompt,
-        config={
-            "response_mime_type": "application/json",
-            "response_schema":AnalyzeResult
-        }
-    )
+        # Geminiクライアントの初期化
+        try:
+            client = genai.Client(api_key=api_key)
+        except Exception as e:
+            raise RuntimeError(f"Geminiクライアントの初期化に失敗しました: {e}")
 
-    return response.text
+        # materialsをJSON文字列に変換（辞書の場合）
+        try:
+            if isinstance(request_materials, dict):
+                materials_str = json.dumps(request_materials, ensure_ascii=False, indent=2)
+            else:
+                materials_str = str(request_materials)
+        except Exception as e:
+            raise ValueError(f"materialsの変換に失敗しました: {e}")
+
+        prompt = f"role: you are a helpful assistant.You should answer the user\'s prompt based on the materials.\n\nuser_prompt: {request_prompt}\n\nmaterials: {materials_str}"
+
+        # Gemini APIの呼び出し
+        try:
+            print(f"Gemini API呼び出し開始 - モデル: {model_name}")
+            response = client.models.generate_content(
+                model=model_name,
+                contents=prompt,
+                config={
+                    "response_mime_type": "application/json",
+                    "response_schema":AnalyzeResult
+                }
+            )
+            
+            if not response:
+                raise ValueError("Gemini APIからの応答オブジェクトが空です")
+            
+            if not hasattr(response, 'text') or not response.text:
+                raise ValueError("Gemini APIからの応答テキストが空です")
+                
+            print(f"Gemini API呼び出し成功 - レスポンス長: {len(response.text)}")
+            return response.text
+            
+        except Exception as e:
+            print(f"Gemini API呼び出しエラー: {type(e).__name__}: {e}")
+            raise RuntimeError(f"Gemini API呼び出し中にエラーが発生しました: {type(e).__name__}: {e}")
+        
+    except ValueError as e:
+        # 入力検証エラー
+        raise ValueError(f"入力データエラー: {e}")
+    except RuntimeError as e:
+        # APIやネットワーク関連のエラー
+        raise RuntimeError(f"実行時エラー: {e}")
+    except Exception as e:
+        # その他の予期しないエラー
+        raise RuntimeError(f"予期しないエラーが発生しました: {e}")

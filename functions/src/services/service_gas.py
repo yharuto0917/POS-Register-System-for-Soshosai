@@ -66,18 +66,69 @@ const sampleOrder1 = {
 """
 
 def excuteGAS(contents):
-    url = 'https://script.google.com/macros/s/AKfycbx98s3DUuJQRKnB0OOHe3GjGQadKSY7JzYAFsKBCh3Cj3w1ran0c2pzplDD9hvpCHbF/exec'
-    
     try:
-        response = requests.post(url, json=contents)
-        # HTTPステータスコードが 2xx (成功) でない場合に例外を発生させます
-        response.raise_for_status()
-        return response.json()
-    except json.JSONDecodeError:
-        # GASからの応答がJSON形式でない場合のエラーです
-        print(f"Error: Failed to decode JSON from GAS. Response text: {response.text}")
-        return {"error": "Invalid JSON response from GAS", "details": response.text}
-    except requests.exceptions.RequestException as e:
-        # ネットワークエラーやHTTPエラーの場合
-        print(f"Error: Request to GAS failed: {e}")
-        return {"error": "Failed to communicate with GAS", "details": str(e)}
+        # 入力データの検証
+        if not isinstance(contents, dict):
+            raise ValueError("contentsはdict形式である必要があります")
+        
+        if not contents:
+            raise ValueError("contentsが空です")
+
+        # url無効化済み。テスト・本番用のurlを後に設定する
+        url = 'https://script.google.com/xxxxxxxxx'
+        
+        if not url:
+            raise ValueError("GAS URLが設定されていません")
+        
+        try:
+            # GASへのPOSTリクエスト
+            response = requests.post(url, json=contents, timeout=30)
+            
+            # HTTPステータスコードが 2xx (成功) でない場合に例外を発生させます
+            response.raise_for_status()
+            
+            # レスポンスの内容を確認
+            if not response.content:
+                raise ValueError("GASからの応答が空です")
+                
+            try:
+                result = response.json()
+                return result
+            except json.JSONDecodeError as e:
+                # GASからの応答がJSON形式でない場合のエラーです
+                print(f"Error: Failed to decode JSON from GAS. Response text: {response.text}")
+                raise RuntimeError(f"GASからの応答がJSON形式ではありません: {e}")
+                
+        except requests.exceptions.Timeout:
+            # タイムアウトエラーの場合
+            print("Error: Request to GAS timed out")
+            raise RuntimeError("GASへのリクエストがタイムアウトしました")
+            
+        except requests.exceptions.ConnectionError as e:
+            # 接続エラーの場合
+            print(f"Error: Connection to GAS failed: {e}")
+            raise RuntimeError(f"GASへの接続に失敗しました: {e}")
+            
+        except requests.exceptions.HTTPError as e:
+            # HTTPエラーの場合
+            print(f"Error: HTTP error from GAS: {e}")
+            raise RuntimeError(f"GASからHTTPエラーが返されました: {e}")
+            
+        except requests.exceptions.RequestException as e:
+            # その他のリクエストエラーの場合
+            print(f"Error: Request to GAS failed: {e}")
+            raise RuntimeError(f"GASへのリクエストに失敗しました: {e}")
+            
+    except ValueError as e:
+        # 入力検証エラー
+        print(f"Input validation error: {e}")
+        raise ValueError(f"入力データエラー: {e}")
+        
+    except RuntimeError as e:
+        # 実行時エラー（すでにメッセージ付き）
+        raise e
+        
+    except Exception as e:
+        # その他の予期しないエラー
+        print(f"Unexpected error in excuteGAS: {e}")
+        raise RuntimeError(f"予期しないエラーが発生しました: {e}")
