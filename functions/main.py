@@ -6,7 +6,7 @@ from src.services.service_gas import excuteGAS
 
 initialize_app()
 
-@https_fn.on_call()
+@https_fn.on_call(secrets=["GEMINI_API_KEY","LINE_ACCESS_TOKEN"])
 def on_call_backend(req: https_fn.CallableRequest) -> any:
 
     if(req.data is None):
@@ -38,7 +38,7 @@ def on_call_backend(req: https_fn.CallableRequest) -> any:
         result = geminiAnalyze(contents)
         return result
     elif(function_name == "excuteGAS"):
-        result = excuteGAS(contents, function_name)
+        result = excuteGAS(contents)
         return result
     else:
         raise https_fn.HttpsError(
