@@ -29,4 +29,5 @@ NotebookLM:
 * Gemini 2.5 Flash
 * Gemini 2.5 Flash Lite Preview 06-17
 * Claude Opus 4
+* Claude Opus 4.1
 * Claude Sonnet 4

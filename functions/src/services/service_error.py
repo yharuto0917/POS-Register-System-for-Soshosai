@@ -46,9 +46,6 @@ def sendErrorLog(contents):
         print(f"sendErrorLogの実行中にエラーが発生しました: {e}")
         return {"status": "error", "message": f"sendErrorLogの実行中にエラーが発生しました: {e}"}
 
-    # main.pyテスト用コード（Seacret_manager.pyを設定後に削除）
-    # print(f"sendErrorLog is called with: {contents}")
-    # return {"status": "success", "message": "Error log sent."}
 
 def setMessage(contents):
     message = f"POSシステムfor蒼翔祭が{contents['storeName']}でエラーが発生しました。\n"
