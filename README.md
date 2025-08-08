@@ -7,12 +7,15 @@ NotebookLM:
 
 ## システム概要
 ### システム構成
-このアプリケーションは以下の言語及びフレームワークで記述されています。
+このアプリケーションは以下の言語及びフレームワーク、ライブラリ等で記述されています。
 * JavaScript
+* Python
 * React
 * Next.js
 * ShadcnUI
 * TailwindCSS
+* Google GenAI SDK
+* Pydantic
 
 このアプリケーションは以下のAPIを使用しています。
 * Gemini API
@@ -21,7 +24,7 @@ NotebookLM:
 このアプリケーションはBaaSとして以下のサービスを使用しています。
 * Cloud Functions for Firebase
 * Cloud Firestore
-* Firebase Hosting
+* Firebase App Hosting
 * Google App Script
 
 このアプリケーションは以下の大規模言語モデルにより一部機能を実装しています。
