@@ -34,3 +34,4 @@ NotebookLM:
 * Claude Opus 4
 * Claude Opus 4.1
 * Claude Sonnet 4
+* GPT-5
