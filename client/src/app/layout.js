@@ -17,22 +17,29 @@ const geistSans = Geist({
 export const metadata = {
   title: "POSレジシステムfor蒼翔祭",
   description: "会津大学学園祭・蒼翔祭のためのPOSレジシステム",
+  icons: {
+    icon: "/soshosai.svg",
+  }
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="ja">
-      <body
-        className={`${geistSans.variable} ${notoSansJP.variable} antialiased`}
-      >
-        <SidebarProvider>
-          <AppSidebar />
-          <main>
-            <SidebarTrigger />
-            {children}
-          </main>
-        </SidebarProvider>
-      </body>
+        <body
+          className={`${geistSans.variable} ${notoSansJP.variable} antialiased `}
+        >
+          <div className="bg-neutral-100">
+            <SidebarProvider >
+              <AppSidebar />
+              <main className="m-2 rounded-md shadow-lg shadow-black/10 bg-white" style={{height: 'calc(100vh - 1rem)', width: 'calc(100vw - 1rem)'}} >
+              <div className="p-4">
+                <SidebarTrigger />
+                {children}
+              </div>
+              </main>
+            </SidebarProvider>
+          </div>
+        </body>
     </html>
   );
 }

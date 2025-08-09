@@ -32,7 +32,7 @@ export function AppSidebar() {
                             <DropdownMenuTrigger asChild>
                                 <SidebarMenuButton>
                                     <img src="/soshosai.svg" alt="logo" width={24} height={24} className="h-6 w-6" />
-                                    <span className="text-sm">蒼翔祭POSレジシステム</span>
+                                    <span className="text-xs">POSレジシステムfor蒼翔祭</span>
                                     <ChevronRightIcon className="ml-auto" />
                                 </SidebarMenuButton>
                             </DropdownMenuTrigger>
