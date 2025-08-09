@@ -1,5 +1,6 @@
-import { menueItems } from '@/components/sidebar-components/menuItems'
+import { menueItems } from '@/components/common/menuItems'
 import { ChevronRightIcon } from 'lucide-react'
+import { HeaderDropdown } from '@/components/common/headerDropdown'
 
 import {
     Sidebar,
@@ -19,7 +20,6 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
     DropdownMenuSeparator,
-    DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu'
 
 export function AppSidebar() {
@@ -28,23 +28,7 @@ export function AppSidebar() {
             <SidebarHeader>
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <SidebarMenuButton>
-                                    <img src="/soshosai.svg" alt="logo" width={24} height={24} className="h-6 w-6" />
-                                    <span className="text-xs">POSレジシステムfor蒼翔祭</span>
-                                    <ChevronRightIcon className="ml-auto" />
-                                </SidebarMenuButton>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent className="w-[--radix-popper-anchor-width]">
-                                <DropdownMenuItem>
-                                    <span>わたあめ</span>
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                    <span>ドリンク</span>
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                        <HeaderDropdown />
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarHeader>
@@ -76,22 +60,20 @@ export function AppSidebar() {
                                     <ChevronRightIcon className="ml-auto" />
                                 </SidebarMenuButton>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent className="w-[--radix-popper-anchor-width]" align="start">
+                            <DropdownMenuContent className="w-[--radix-popper-anchor-width]" align="center">
                                 <DropdownMenuItem>
-                                    <DropdownMenuItem>
-                                        ポートフォリオ
-                                    </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem>
-                                        ユーザー情報
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem>
-                                        ユーザー設定
-                                    </DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem>
-                                        ログアウト
-                                    </DropdownMenuItem>
+                                    ポートフォリオ
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem>
+                                    ユーザー情報
+                                </DropdownMenuItem>
+                                <DropdownMenuItem>
+                                    ユーザー設定
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem>
+                                    ログアウト
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
